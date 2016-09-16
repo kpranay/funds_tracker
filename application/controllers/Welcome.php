@@ -3,23 +3,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Welcome extends CI_Controller {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
-	public function index()
-	{
-		$this->load->view('welcome_message');
-	}
+    function __construct() {
+        parent::__construct();
+        $this->load->model('user_model');
+    }    
+    
+    public function index()
+    {
+        $this->load->helper('form');
+        if($this->session->logged_in == "YES"){
+            $this->load->view('nav_bars/header');
+            $this->load->view('nav_bars/left_nav');
+            $this->load->view('welcome_message');
+            $this->load->view('nav_bars/footer');
+        }else if($this->input->post('user_name') && $this->input->post('password')){
+            $login_data = $this->user_model->login();
+            if(sizeof($login_data) > 0){
+                $user_functions = $this->user_model->get_user_functions();
+                $user_data = array(
+                    'user_name' => $login_data[0]->user_name,
+                    'user_id' => $login_data[0]->user_id,               
+                    'user_functions' => $user_functions,
+                    'logged_in' => 'YES'
+                );
+                $this->session->set_userdata($user_data);
+                $this->load->view('nav_bars/header');
+                $this->load->view('nav_bars/left_nav');
+                $this->load->view('welcome_message');
+                $this->load->view('nav_bars/footer');
+            }
+        }else{
+            $this->load->view('login_page');
+        }        
+    }
+    
+    function logout(){
+        $this->session->sess_destroy();
+        $this->load->view('login_page');
+    }
 }
