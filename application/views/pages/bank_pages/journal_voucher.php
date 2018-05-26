@@ -212,9 +212,7 @@
 
 				<?php if(isset($tranx->notes) && strlen($tranx->notes)>0){?>
 					<div class="col-md-12" style="border-bottom:1px solid grey;">
-				
-							<label>Notes :</label> <?php echo $tranx->notes; ?>
-
+						<label>Notes :</label> <?php echo $tranx->notes; ?>
 					</div>
 				<?php }?>
 				
